@@ -3,6 +3,8 @@ package bdb
 import (
 	"bytes"
 	"encoding/binary"
+	"runtime"
+
 	"golang.org/x/xerrors"
 )
 
@@ -19,9 +21,17 @@ type HashMetadataPage struct {
 }
 
 func ParseHashMetadataPage(data []byte) (*HashMetadataPage, error) {
-	var metadata HashMetadataPage
+	var (
+		metadata HashMetadataPage
+		err      error
+	)
 
-	err := binary.Read(bytes.NewReader(data), binary.LittleEndian, &metadata)
+	// fix for IBM Z which is big endian
+	if runtime.GOARCH == "s390x" {
+		err = binary.Read(bytes.NewReader(data), binary.BigEndian, &metadata)
+	} else {
+		err = binary.Read(bytes.NewReader(data), binary.LittleEndian, &metadata)
+	}
 	if err != nil {
 		return nil, xerrors.Errorf("failed to unpack HashMetadataPage: %w", err)
 	}
