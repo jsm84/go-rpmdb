@@ -45,8 +45,8 @@ func (p *HashMetadataPage) validate() error {
 		return err
 	}
 
-	if p.Magic != HashMagicNumber || p.Magic != HashMagicNumberBE {
-		return xerrors.Errorf("unexpected DB magic number: %X", p.Magic)
+	if p.Magic != HashMagicNumber || p.Magic != HashMagicNumberBE || p.Magic != HashMagicNumberBE2LE || p.Magic != HashMagicNumberLE2BE {
+		return xerrors.Errorf("unexpected DB magic number: 0x%X", p.Magic)
 	}
 
 	if p.PageType != HashMetadataPageType {
