@@ -1,12 +1,11 @@
-//go:build !s390x
-// +build !s390x
+//go:build s390x
+// +build s390x
 
 package bdb
 
 import (
 	"bytes"
 	"encoding/binary"
-
 	"golang.org/x/xerrors"
 )
 
@@ -33,7 +32,7 @@ type GenericMetadataPage struct {
 func ParseGenericMetadataPage(data []byte) (*GenericMetadataPage, error) {
 	var metadata GenericMetadataPage
 
-	err := binary.Read(bytes.NewReader(data), binary.LittleEndian, &metadata)
+	err := binary.Read(bytes.NewReader(data), binary.BigEndian, &metadata)
 
 	if err != nil {
 		return nil, xerrors.Errorf("failed to unpack GenericMetadataPage: %w", err)

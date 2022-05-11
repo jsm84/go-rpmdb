@@ -1,12 +1,11 @@
-//go:build !s390x
-// +build !s390x
+//go:build s390x
+// +build s390x
 
 package bdb
 
 import (
 	"bytes"
 	"encoding/binary"
-
 	"golang.org/x/xerrors"
 )
 
@@ -21,7 +20,7 @@ type HashOffPageEntry struct {
 func ParseHashOffPageEntry(data []byte) (*HashOffPageEntry, error) {
 	var entry HashOffPageEntry
 
-	err := binary.Read(bytes.NewReader(data), binary.LittleEndian, &entry)
+	err := binary.Read(bytes.NewReader(data), binary.BigEndian, &entry)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to unpack HashOffPageEntry: %w", err)
 	}

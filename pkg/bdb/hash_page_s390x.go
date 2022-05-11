@@ -1,15 +1,14 @@
-//go:build !s390x
-// +build !s390x
+//go:build s390x
+// +build s390x
 
 package bdb
 
 import (
 	"bytes"
 	"encoding/binary"
+	"golang.org/x/xerrors"
 	"io"
 	"os"
-
-	"golang.org/x/xerrors"
 )
 
 // source: https://github.com/berkeleydb/libdb/blob/5b7b02ae052442626af54c176335b67ecc613a30/src/dbinc/db_page.h#L259
@@ -27,7 +26,7 @@ type HashPage struct {
 func ParseHashPage(data []byte) (*HashPage, error) {
 	var hashPage HashPage
 
-	err := binary.Read(bytes.NewReader(data), binary.LittleEndian, &hashPage)
+	err := binary.Read(bytes.NewReader(data), binary.BigEndian, &hashPage)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to unpack: %w", err)
 	}
@@ -105,7 +104,7 @@ func HashPageValueIndexes(data []byte, entries uint16) ([]uint16, error) {
 	const keyValuePairSize = 2 * HashIndexEntrySize
 	for idx := range hashIndexData {
 		if (idx-HashIndexEntrySize)%keyValuePairSize == 0 {
-			value := binary.LittleEndian.Uint16(hashIndexData[idx : idx+2])
+			value := binary.BigEndian.Uint16(hashIndexData[idx : idx+2])
 			hashIndexValues = append(hashIndexValues, value)
 		}
 	}
